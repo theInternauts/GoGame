@@ -1,10 +1,10 @@
 #these will eventually be attributes of a board object
 BOARD_WIDTH = 5
 BOARD_STATE = [	2,2,2,2,2,
-								2,0,2,0,2,
-								2,2,1,0,2,
-								2,1,0,1,2,
-								2,2,1,2,2	]
+								2,0,0,2,2,
+								2,2,2,1,1,
+								2,1,1,0,0,
+								2,1,0,0,0	]
 BOARD_STATE.map! do |num|
 	if num == 2
 		num = :black
@@ -23,23 +23,17 @@ def breathing_room_total(options)
 	previous_index = options[:previous_index] || board_index
 	data = options[:data] || {:breathing_room_total => 0, :previous_indices => [], :indices_of_target_player_color => []}
 
-	# p data[:previous_indices].sort
-
 	if off_board?({board_index: board_index, previous_index: previous_index})
 		return data
 	end
-	puts "board_index is #{board_index}"
 
 	data[:previous_indices].push(board_index)
 	current_piece_color = BOARD_STATE[board_index]
-	neighbors = [board_index + 1, board_index - 1, board_index + BOARD_WIDTH, board_index - BOARD_WIDTH] - data[:previous_indices]
+	neighbors = find_neighbors({board_index: board_index, previous_indices: data[:previous_indices]})
 
-
+	#if either neighbors is empty, or current_piece_color doesn't equal player_color we have hit a base case in which we augment nothing
 	if empty_index?(current_piece_color)
 		data[:breathing_room_total] += 1
-		return data[:breathing_room_total]
-	elsif neighbors.empty? || oppents_piece?({current_piece_color: current_piece_color, player_color: player_color})
-		return data[:breathing_room_total]
 	elsif player_color == current_piece_color
 		data[:indices_of_target_player_color].push(board_index)
 		neighbors.each do |neighbor|
@@ -61,6 +55,7 @@ def find_score(scores)
 	while !unchecked_spaces.empty?
 		info = recursion({ board_index: unchecked_spaces.first,
 											data: {surrounded_territory: true} })
+
 		if info[:surrounded_territory] && info[:border_color]
 			scoring_team = info[:border_color]
 			scores[scoring_team] += info[:total]
@@ -89,60 +84,42 @@ def recursion(options)
 	data = options[:data]
 	data[:previous_indices] ||= []
 	data[:total] ||= 0
-	# puts "board_index is #{board_index}"
 
 	data[:previous_indices].push(board_index)
-	if current_piece_color != :empty && data[:previous_indices].empty?
-		# puts "hi"
-		return	data
-	end
 
 	if off_board?({board_index: board_index, previous_index: previous_index})
-		# puts "hey"
 		return data
 	end
 
+	#if border_color equals current_piece_color, we have hit a base case where we augment nothing
 	if current_piece_color == :empty
-		# puts "ho"
 		data[:total] += 1
-		# puts "data[:total] is #{data[:total]}"
-		neighbors = [board_index + 1, board_index - 1, board_index + BOARD_WIDTH, board_index - BOARD_WIDTH] - data[:previous_indices]
+		neighbors = find_neighbors({board_index: board_index, previous_indices: data[:previous_indices]})
 		neighbors.each do |neighbor|
 			unless data[:previous_indices].include?(neighbor)
 				recursion( {board_index: neighbor, previous_index: board_index, data: data } )
 			end
 		end
 	elsif !data[:border_color]
-		# puts "HIII"
-		# puts "data[:border_color] is #{data[:border_color]}"
 		data[:border_color] = current_piece_color
-		# puts "data[:border_color] is #{data[:border_color]}"
-		return	data
+		#the next condition indicates that the set of empty spaces is not surrounded by just a single color
 	elsif data[:border_color] != current_piece_color
-		# puts "hello"
 		data[:surrounded_territory] = false
-		return	data
-	elsif data[:border_color] == current_piece_color
-		# puts "go fuck yourself"
-		return	data
 	end
-	return	data
-				 
+
+	return	data			 
 end
 
 
 
+def find_neighbors(options)
+	board_index = options[:board_index]
+	previous_indices = options[:previous_indices]
+	return [board_index + 1, board_index - 1, board_index + BOARD_WIDTH, board_index - BOARD_WIDTH] - previous_indices
+end
 
 def empty_index?(current_piece_color)
 	if current_piece_color == :empty
-		return true
-	end
-end
-
-def oppents_piece?(options)
-	current_piece_color = options[:current_piece_color]
-	player_color = options[:player_color]
-	if current_piece_color != player_color && current_piece_color != :empty
 		return true
 	end
 end
@@ -177,7 +154,7 @@ def different_row_and_column?(options)
 	end
 end
 
-# p breathing_room_total( {board_index: 0} )
+# p breathing_room_total( {board_index: 1} )
 p find_score(:black => 0, :white => 0)
 
 
