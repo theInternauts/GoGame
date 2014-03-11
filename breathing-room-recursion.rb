@@ -16,7 +16,6 @@ BOARD_STATE.map! do |num|
 end
 			
 
-
 def breathing_room_total(options)
 	board_index = options[:board_index]
 	player_color = options[:player_color] || BOARD_STATE[board_index]
@@ -31,7 +30,7 @@ def breathing_room_total(options)
 	current_piece_color = BOARD_STATE[board_index]
 	neighbors = find_neighbors({board_index: board_index, previous_indices: data[:previous_indices]})
 
-	#if either neighbors is empty, or current_piece_color doesn't equal player_color we have hit a base case in which we augment nothing
+	#if either neighbors is empty, or current_piece_color doesn't equal player_color we have hit a base case in which we augment nothing, so it doesn't have a conditional
 	if empty_index?(current_piece_color)
 		data[:breathing_room_total] += 1
 	elsif player_color == current_piece_color
@@ -53,7 +52,7 @@ def find_score(scores)
 	#expects input of a hash with pointers :white, and :black, pointing to the respective team's scores
 	unchecked_spaces = (0..(BOARD_WIDTH * BOARD_WIDTH - 1)).to_a
 	while !unchecked_spaces.empty?
-		info = recursion({ board_index: unchecked_spaces.first,
+		info = search_for_captured_territory({ board_index: unchecked_spaces.first,
 											data: {surrounded_territory: true} })
 
 		if info[:surrounded_territory] && info[:border_color]
@@ -65,7 +64,7 @@ def find_score(scores)
 	return scores
 end
 
-def recursion(options)
+def search_for_captured_territory(options)
 	board_index = options[:board_index]
 	current_piece_color = BOARD_STATE[board_index]
 	previous_index = options[:previous_index] || board_index
@@ -80,25 +79,24 @@ def recursion(options)
 		return data
 	end
 
-	#if border_color equals current_piece_color, we have hit a base case where we augment nothing
+	#if border_color equals current_piece_color, we have hit a base case where we augment nothing, so it doesn't have a conditional
 	if current_piece_color == :empty
 		data[:total] += 1
 		neighbors = find_neighbors({board_index: board_index, previous_indices: data[:previous_indices]})
 		neighbors.each do |neighbor|
 			unless data[:previous_indices].include?(neighbor)
-				recursion( {board_index: neighbor, previous_index: board_index, data: data } )
+				search_for_captured_territory( {board_index: neighbor, previous_index: board_index, data: data } )
 			end
 		end
 	elsif !data[:border_color]
 		data[:border_color] = current_piece_color
-		#the next condition indicates that the set of empty spaces is not surrounded by just a single color
+		#the next condition indicates that the set of empty spaces is not surrounded by just a single color, so isn't captured territory
 	elsif data[:border_color] != current_piece_color
 		data[:surrounded_territory] = false
 	end
 
 	return	data			 
 end
-
 
 
 def find_neighbors(options)
