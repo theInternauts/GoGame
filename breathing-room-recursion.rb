@@ -70,17 +70,6 @@ def recursion(options)
 	current_piece_color = BOARD_STATE[board_index]
 	previous_index = options[:previous_index] || board_index
 
-	#seems like keep the variables contained within data, and just returning data would be more readable
-	#and easier to modify without breaking, but i wanted to see it the other way so i tried this
-	#mostly because it looked weird in the last recursion to keep indexing into data, but i think this is worse
-	#
-	#keeping the commented out assignments below because i still want to see why it didn't work that way
-	#pretty sure it should, just think failure to make it work was an indication that it was unreadable
-	#
-	# surrounded_territory = options[:data][:surrounded_territory]
-	# previous_indices = options[:data][:previous_indices] || []
-	# border_color = options[:data][:border_color]
-	# total = options[:data][:total] || 0
 	data = options[:data]
 	data[:previous_indices] ||= []
 	data[:total] ||= 0
