@@ -9,41 +9,38 @@
 # from scratch. The latter is a flawed and unsustainable approach (the more migrations
 # you'll amass, the slower it'll run and the greater likelihood for issues).
 #
-# It's strongly recommended that you check this file into your version control system.
+# It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140311084746) do
+ActiveRecord::Schema.define(:version => 20140312204304) do
 
-  # These are extensions that must be enabled in order to support this database
-  enable_extension "plpgsql"
-
-  create_table "games", force: true do |t|
+  create_table "games", :force => true do |t|
     t.string   "current_board"
     t.string   "previous_board"
     t.integer  "current_player_turn"
     t.string   "game_score"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at",          :null => false
+    t.datetime "updated_at",          :null => false
   end
 
-  create_table "games_users", id: false, force: true do |t|
-    t.integer "game_id", null: false
-    t.integer "user_id", null: false
+  create_table "games_users", :id => false, :force => true do |t|
+    t.integer "game_id"
+    t.integer "user_id"
   end
 
-  create_table "users", force: true do |t|
-    t.datetime "created_at",                     null: false
-    t.datetime "updated_at",                     null: false
-    t.string   "email",                          null: false
-    t.string   "encrypted_password", limit: 128, null: false
-    t.string   "confirmation_token", limit: 128
-    t.string   "remember_token",     limit: 128, null: false
+  create_table "users", :force => true do |t|
+    t.datetime "created_at",                        :null => false
+    t.datetime "updated_at",                        :null => false
+    t.string   "email",                             :null => false
+    t.string   "encrypted_password", :limit => 128, :null => false
+    t.string   "confirmation_token", :limit => 128
+    t.string   "remember_token",     :limit => 128, :null => false
     t.integer  "lifetime_points"
     t.integer  "wins"
     t.integer  "losses"
     t.integer  "draws"
   end
 
-  add_index "users", ["email"], name: "index_users_on_email", using: :btree
-  add_index "users", ["remember_token"], name: "index_users_on_remember_token", using: :btree
+  add_index "users", ["email"], :name => "index_users_on_email"
+  add_index "users", ["remember_token"], :name => "index_users_on_remember_token"
 
 end
