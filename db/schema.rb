@@ -11,18 +11,19 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140312210437) do
+ActiveRecord::Schema.define(:version => 20140312234633) do
 
   create_table "games", :force => true do |t|
     t.string   "current_board"
     t.string   "previous_board"
     t.integer  "current_player_turn"
-    t.datetime "created_at",          :null => false
-    t.datetime "updated_at",          :null => false
+    t.datetime "created_at",                            :null => false
+    t.datetime "updated_at",                            :null => false
     t.integer  "player_white_uid"
     t.integer  "player_black_uid"
     t.integer  "player_white_score"
     t.integer  "player_black_score"
+    t.boolean  "active",              :default => true
   end
 
   create_table "games_users", :id => false, :force => true do |t|

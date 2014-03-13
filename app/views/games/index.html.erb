@@ -1,6 +1,14 @@
-<p>index.html.erb</p>
-<p>this is a game page</p>
-<p>what should it do?  Ideas:</p>
+<hr />
+
+<% @active_games.each do |game| %>
+ <div><%= link_to game %></div>
+<% end %>
+ <hr />
+
+<% @inactive_games.each do |game| %>
+ <div><%= link_to game %></div>
+<% end %>
+
 <ul>
   <li>List options like: "new game," "continue game," "login," etc.?</li>
   <li>start with a game and automatically begin looking for a random player?</li>

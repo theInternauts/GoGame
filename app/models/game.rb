@@ -1,3 +1,6 @@
 class Game < ActiveRecord::Base
-	has_and_belongs_to_many :users
+	attr_accessible :player_white_uid, :player_black_uid
+
+  has_and_belongs_to_many :users
+
 end

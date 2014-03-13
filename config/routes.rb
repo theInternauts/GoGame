@@ -1,5 +1,9 @@
 GoGame::Application.routes.draw do
-  root :to => 'games#index'
+  root :to => 'users#show'
+
+  resources :users do
+    resources :games
+  end
   # The priority is based upon order of creation:
   # first created -> highest priority.
 
